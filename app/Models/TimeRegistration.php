@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 class TimeRegistration extends Model
@@ -28,13 +29,8 @@ class TimeRegistration extends Model
         ];
     }
 
-    public function getStartTimeAttribute()
+    public function user(): BelongsTo
     {
-        return Carbon::createFromFormat('H:i:s', $this->attributes['start_time']);
-    }
-
-    public function getEndTimeAttribute()
-    {
-        return Carbon::createFromFormat('H:i:s', $this->attributes['end_time']);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

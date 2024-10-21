@@ -6,37 +6,69 @@ use App\Filament\Portal\Resources\TimeRegistrationResource\Pages;
 use App\Filament\Portal\Resources\TimeRegistrationResource\RelationManagers;
 use App\Models\TimeRegistration;
 use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class TimeRegistrationResource extends Resource
 {
     protected static ?string $model = TimeRegistration::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
+
+    protected static ?string $navigationLabel = 'Uren';
+
+    protected static ?string $breadcrumb = 'Uren';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::id());
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Group::make()
+                    ->relationship('user')
+                    ->schema([
+                        TextInput::make('name')
+                            ->default(Auth::user()->name)
+                            ->label('Naam')
+                            ->disabled(),
+                    ]),
                 Forms\Components\DatePicker::make('date')
+                    ->label('Datum')
                     ->required(),
                 Forms\Components\TimePicker::make('start_time')
+                    ->label('Starttijd')
+                    ->format('H:i')
+                    ->seconds(false)
                     ->required(),
                 Forms\Components\TimePicker::make('end_time')
-                    ->required(),
+                    ->required()
+                    ->format('H:i')
+                    ->seconds(false)
+                    ->label('Eindtijd'),
                 Forms\Components\TextInput::make('breaktime_minutes')
                     ->required()
+                    ->label('Pauzetijd (minuten)')
                     ->numeric(),
                 Forms\Components\TextInput::make('mileage')
                     ->required()
+                    ->label('Kilometerstand')
                     ->numeric(),
-                Forms\Components\TextInput::make('description')
+                Forms\Components\Textarea::make('description')
                     ->required()
+                    ->columnSpanFull()
+                    ->label('Omschrijving')
                     ->maxLength(255),
             ]);
     }
@@ -46,22 +78,30 @@ class TimeRegistrationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('date')
-                    ->date()
+                    ->label('Datum')
+                    ->date('d-m-Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_time')
-                    ->time(),
+                    ->label('Starttijd')
+                    ->time('H:i'),
                 Tables\Columns\TextColumn::make('end_time')
-                    ->time(),
+                    ->label('Eindtijd')
+                    ->time('H:i'),
                 Tables\Columns\TextColumn::make('breaktime_minutes')
-                    ->numeric(),
+                    ->label('Pauzetijd (minuten)')
+                    ->numeric()
+                    ->visibleFrom('md'),
                 Tables\Columns\TextColumn::make('mileage')
-                    ->numeric(),
+                    ->label('Kilometerstand')
+                    ->numeric()
+                    ->visibleFrom('md'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Bewerken'),
             ]);
     }
 

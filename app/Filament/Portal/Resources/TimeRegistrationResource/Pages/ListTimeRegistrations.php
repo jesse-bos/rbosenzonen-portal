@@ -10,10 +10,17 @@ class ListTimeRegistrations extends ListRecords
 {
     protected static string $resource = TimeRegistrationResource::class;
 
+    protected static ?string $breadcrumb = 'Lijst';
+
     protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return 'Uren registraties';
     }
 }
