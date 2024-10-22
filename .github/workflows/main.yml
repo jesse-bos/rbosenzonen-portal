@@ -20,37 +20,45 @@ jobs:
         command_timeout: 30m
         script: | 
           cd ${{ secrets.WORK_DIR }}
-
+        
           echo "Deploying application ..."
-
+        
           # Enter maintenance mode
           php artisan down || true
-
+        
           # Update codebase
           git fetch origin
-          git reset --hard origin/main
-          git pull origin release
-
-          # Remove the existing .env file
-          rm -f .env
-
-          # Rename .env.production to .env
-          mv .env.production .env
-
+          git checkout ${{ secrets.MAIN_BRANCH }}
+          git pull origin ${{ secrets.MAIN_BRANCH }}
+        
+          # Check if .env.production exists before renaming
+          if [ -f .env.production ]; then
+              # Remove the existing .env file if it exists
+              rm -f .env
+              # Rename .env.production to .env
+              cp .env.production .env
+          else
+              echo ".env.production file does not exist. Deployment cannot continue."
+              exit 1
+          fi
+        
           # Update .env with repository secrets
-          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" .env
-
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD='${{ secrets.DB_PASSWORD }}'/' .env
+        
           # Install dependencies based on lock file
           composer install --no-interaction --prefer-dist --optimize-autoloader
-
+        
+          # Generate the application key
+          php artisan key:generate
+        
           # Clear cache
           php artisan config:cache
           php artisan optimize
-
+        
           # Migrate database
           php artisan migrate --force
-
+        
           # Exit maintenance mode
           php artisan up
-
+        
           echo "Application deployed!"
