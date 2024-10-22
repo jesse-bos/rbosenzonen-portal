@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -98,8 +99,13 @@ class TimeRegistrationResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()
                     ->label('Bewerken'),
+                    Tables\Actions\DeleteAction::make()
+                    ->label('Verwijderen'),
+                ])->iconButton()
+          
             ]);
     }
 
