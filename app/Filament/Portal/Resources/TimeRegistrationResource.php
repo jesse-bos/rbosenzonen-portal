@@ -38,7 +38,7 @@ class TimeRegistrationResource extends Resource
                     ->relationship('user')
                     ->schema([
                         TextInput::make('name')
-                            ->default(Auth::user()->name)
+                            ->default(Auth::user()?->name)
                             ->label('Naam')
                             ->disabled(),
                     ]),
