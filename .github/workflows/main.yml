@@ -10,14 +10,38 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: install ssh keys
-      # check this thread to understand why its needed:
-      # https://stackoverflow.com/a/70447517
-      run: |
-        install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-    - name: connect and pull
-      run: ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
-    - name: cleanup
-      run: rm -rf ~/.ssh
+    - name: Deploy to productiom
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        command_timeout: 30m
+        script: | 
+          cd ${{ secrets.WORK_DIR }}
+
+          echo "Deploying application ..."
+
+          # Enter maintenance mode
+          php artisan down || true
+
+          # Update codebase
+          git fetch origin
+          git reset --hard origin/main
+          git pull origin release
+
+          # Install dependencies based on lock file
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+
+          # Clear cache
+          php artisan config:cache
+          php artisan optimize
+
+          # Migrate database
+          php artisan migrate --force
+
+          # Exit maintenance mode
+          php artisan up
+
+          echo "Application deployed!"
