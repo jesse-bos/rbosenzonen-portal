@@ -28,8 +28,8 @@ jobs:
 
           # Update codebase
           git fetch origin
-          git reset --hard ${{ secrets.MAIN_BRANCH }}
-          git pull origin release
+          git checkout ${{ secrets.MAIN_BRANCH }}
+          git pull origin ${{ secrets.MAIN_BRANCH }}
 
           # Remove the existing .env file
           rm -f .env
