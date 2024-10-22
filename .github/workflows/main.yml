@@ -49,9 +49,6 @@ jobs:
           # Install dependencies based on lock file
           composer install --no-interaction --prefer-dist --optimize-autoloader
         
-          # Generate the application key
-          php artisan key:generate
-        
           # Clear cache
           php artisan config:cache
           php artisan optimize
