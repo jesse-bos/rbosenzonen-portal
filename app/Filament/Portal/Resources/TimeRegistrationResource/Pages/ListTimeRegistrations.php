@@ -10,7 +10,7 @@ class ListTimeRegistrations extends ListRecords
 {
     protected static string $resource = TimeRegistrationResource::class;
 
-    protected static ?string $breadcrumb = 'Lijst';
+    protected static ?string $breadcrumb = 'Registraties';
 
     protected function getHeaderActions(): array
     {
