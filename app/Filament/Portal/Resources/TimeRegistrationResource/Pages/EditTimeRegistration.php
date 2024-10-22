@@ -10,10 +10,17 @@ class EditTimeRegistration extends EditRecord
 {
     protected static string $resource = TimeRegistrationResource::class;
 
+    protected static ?string $breadcrumb = 'Aanpassen';
+
     protected function getHeaderActions(): array
     {
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return 'Uren Aanpassen';
     }
 }

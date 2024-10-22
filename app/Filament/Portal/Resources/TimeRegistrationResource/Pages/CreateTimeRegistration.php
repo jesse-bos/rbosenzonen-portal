@@ -11,10 +11,19 @@ class CreateTimeRegistration extends CreateRecord
 {
     protected static string $resource = TimeRegistrationResource::class;
 
+    protected static ?string $breadcrumb = 'Aanmaken';
+
+    protected static bool $canCreateAnother = false;
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = Auth::id();
      
         return $data;
+    }
+
+    public function getTitle(): string
+    {
+        return 'Urenregistratie Aanmaken';
     }
 }

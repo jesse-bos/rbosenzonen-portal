@@ -84,10 +84,12 @@ class TimeRegistrationResource extends Resource
                     ->sortable(),
                 TextColumn::make('start_time')
                     ->label('Starttijd')
-                    ->time('H:i'),
+                    ->time('H:i')
+                    ->visibleFrom('md'),
                 TextColumn::make('end_time')
                     ->label('Eindtijd')
-                    ->time('H:i'),
+                    ->time('H:i')
+                    ->visibleFrom('md'),
                 TextColumn::make('breaktime_minutes')
                     ->label('Pauzetijd (minuten)')
                     ->numeric()

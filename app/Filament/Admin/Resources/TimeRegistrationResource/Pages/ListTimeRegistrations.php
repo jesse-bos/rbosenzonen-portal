@@ -10,7 +10,7 @@ class ListTimeRegistrations extends ListRecords
 {
     protected static string $resource = TimeRegistrationResource::class;
 
-    protected static ?string $breadcrumb = 'Registraties';
+    protected static ?string $breadcrumb = 'Overzicht';
 
     protected function getHeaderActions(): array
     {
@@ -19,6 +19,6 @@ class ListTimeRegistrations extends ListRecords
 
     public function getTitle(): string
     {
-        return 'Uren Registraties';
+        return 'Uren Overzicht';
     }
 }
