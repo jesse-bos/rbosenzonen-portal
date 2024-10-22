@@ -43,6 +43,7 @@ jobs:
           fi
         
           # Update .env with repository secrets
+          sed -i 's/APP_KEY=.*/DB_PASSWORD='${{ secrets.APP_KEY }}'/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD='${{ secrets.DB_PASSWORD }}'/' .env
         
           # Install dependencies based on lock file
