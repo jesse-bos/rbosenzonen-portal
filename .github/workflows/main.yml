@@ -31,26 +31,21 @@ jobs:
           git checkout ${{ secrets.MAIN_BRANCH }}
           git pull origin ${{ secrets.MAIN_BRANCH }}
         
-          # Check if .env.production exists before renaming
-          if [ -f .env.production ]; then
-              # Remove the existing .env file if it exists
-              rm -f .env
-              # Rename .env.production to .env
-              cp .env.production .env
-          else
-              echo ".env.production file does not exist. Deployment cannot continue."
+          # Check if .env.production exists after pulling code
+          if [ ! -f .env.production ]; then
+              echo ".env.production file does not exist after pulling code. Deployment cannot continue."
               exit 1
           fi
         
+          # Copy contents from .env.production to .env
+          cp .env.production .env
+        
           # Update .env with repository secrets
-          sed -i 's/APP_KEY=.*/DB_PASSWORD='${{ secrets.APP_KEY }}'/' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD='${{ secrets.DB_PASSWORD }}'/' .env
+          sed -i "s|APP_KEY=.*|APP_KEY='${{ secrets.APP_KEY }}'|" .env
+          sed -i "s|DB_PASSWORD=.*|DB_PASSWORD='${{ secrets.DB_PASSWORD }}'|" .env
         
           # Install dependencies based on lock file
           composer install --no-interaction --prefer-dist --optimize-autoloader
-        
-          # Generate the application key
-          php artisan key:generate
         
           # Clear cache
           php artisan config:cache
