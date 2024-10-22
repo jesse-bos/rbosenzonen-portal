@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Portaal')
-                    ->icon('heroicon-o-cog-6-tooth')
+                    ->icon('heroicon-o-user-circle')
                     ->url('/'),
             ])
             ->colors([

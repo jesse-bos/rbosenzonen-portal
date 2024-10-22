@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Portal\Resources\TimeRegistrationResource\Pages;
+namespace App\Filament\Admin\Resources\TimeRegistrationResource\Pages;
 
-use App\Filament\Portal\Resources\TimeRegistrationResource;
+use App\Filament\Admin\Resources\TimeRegistrationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,9 +14,7 @@ class ListTimeRegistrations extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\CreateAction::make()->label('Nieuwe Registratie')->icon('heroicon-o-plus'),
-        ];
+        return [];
     }
 
     public function getTitle(): string

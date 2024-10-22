@@ -3,18 +3,16 @@
 namespace App\Filament\Portal\Resources;
 
 use App\Filament\Portal\Resources\TimeRegistrationResource\Pages;
-use App\Filament\Portal\Resources\TimeRegistrationResource\RelationManagers;
 use App\Models\TimeRegistration;
 use Filament\Forms;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 
 class TimeRegistrationResource extends Resource
@@ -77,21 +75,21 @@ class TimeRegistrationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('date')
+                TextColumn::make('date')
                     ->label('Datum')
                     ->date('d-m-Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('start_time')
+                TextColumn::make('start_time')
                     ->label('Starttijd')
                     ->time('H:i'),
-                Tables\Columns\TextColumn::make('end_time')
+                TextColumn::make('end_time')
                     ->label('Eindtijd')
                     ->time('H:i'),
-                Tables\Columns\TextColumn::make('breaktime_minutes')
+                TextColumn::make('breaktime_minutes')
                     ->label('Pauzetijd (minuten)')
                     ->numeric()
                     ->visibleFrom('md'),
-                Tables\Columns\TextColumn::make('mileage')
+                TextColumn::make('mileage')
                     ->label('Kilometerstand')
                     ->numeric()
                     ->visibleFrom('md'),
