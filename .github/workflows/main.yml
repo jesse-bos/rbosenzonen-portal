@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Deploy to productiom
+    - name: Deploy to production
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -30,6 +30,15 @@ jobs:
           git fetch origin
           git reset --hard origin/main
           git pull origin release
+
+          # Remove the existing .env file
+          rm -f .env
+
+          # Rename .env.production to .env
+          mv .env.production .env
+
+          # Update .env with repository secrets
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" .env
 
           # Install dependencies based on lock file
           composer install --no-interaction --prefer-dist --optimize-autoloader
