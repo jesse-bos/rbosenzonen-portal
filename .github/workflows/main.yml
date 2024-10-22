@@ -28,7 +28,7 @@ jobs:
 
           # Update codebase
           git fetch origin
-          git reset --hard origin/main
+          git reset --hard ${{ secrets.MAIN_BRANCH }}
           git pull origin release
 
           # Remove the existing .env file
