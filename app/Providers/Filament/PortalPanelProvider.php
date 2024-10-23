@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -28,7 +29,7 @@ class PortalPanelProvider extends PanelProvider
             ->default()
             ->id('portal')
             ->path('/')
-            ->login()
+            ->login(Login::class)
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Admin')
