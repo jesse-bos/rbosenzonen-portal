@@ -58,11 +58,13 @@ class TimeRegistrationResource extends Resource
                     ->label('Eindtijd'),
                 Forms\Components\TextInput::make('breaktime_minutes')
                     ->required()
-                    ->label('Pauzetijd (minuten)')
+                    ->label('Pauzetijd')
+                    ->suffix('minuten')
                     ->numeric(),
                 Forms\Components\TextInput::make('mileage')
                     ->required()
                     ->label('Kilometerstand')
+                    ->suffix('kilometer')
                     ->numeric(),
                 Forms\Components\Textarea::make('description')
                     ->required()
