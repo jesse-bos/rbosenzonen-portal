@@ -5,15 +5,20 @@ namespace App\Filament\Portal\Resources;
 use App\Filament\Portal\Resources\TimeRegistrationResource\Pages;
 use App\Models\TimeRegistration;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action as ActionsAction;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class TimeRegistrationResource extends Resource
@@ -98,9 +103,39 @@ class TimeRegistrationResource extends Resource
                     ->numeric()
                     ->visibleFrom('md'),
             ])
-            ->filters([
-                //
-            ])
+            ->filters(
+                [
+                    SelectFilter::make('date')
+                        ->label('Maand')
+                        ->options([
+                            '01' => 'Januari',
+                            '02' => 'Februari',
+                            '03' => 'Maart',
+                            '04' => 'April',
+                            '05' => 'Mei',
+                            '06' => 'Juni',
+                            '07' => 'Juli',
+                            '08' => 'Augustus',
+                            '09' => 'September',
+                            '10' => 'Oktober',
+                            '11' => 'November',
+                            '12' => 'December',
+                        ])
+                        ->query(function ($query, array $data) {
+                            if (! $month = Arr::get($data, 'value')) {
+                                return $query;
+                            };
+
+                            return $query->whereMonth('date', $month);
+                        })
+                ],
+                layout: FiltersLayout::Dropdown
+            )->filtersTriggerAction(
+                fn(ActionsAction $action) => $action
+                    ->button()
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->label('Filters')
+            )
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\EditAction::make()

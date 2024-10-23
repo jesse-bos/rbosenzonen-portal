@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -19,6 +20,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 
 class TimeRegistrationResource extends Resource
 {
@@ -33,41 +35,41 @@ class TimeRegistrationResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Group::make()
-                ->relationship('user')
-                ->schema([
-                    TextInput::make('name')
-                        ->label('Naam')
-                        ->disabled(),
-                ]),
-            Forms\Components\DatePicker::make('date')
-                ->label('Datum')
-                ->required(),
-            Forms\Components\TimePicker::make('start_time')
-                ->label('Starttijd')
-                ->format('H:i')
-                ->seconds(false)
-                ->required(),
-            Forms\Components\TimePicker::make('end_time')
-                ->required()
-                ->format('H:i')
-                ->seconds(false)
-                ->label('Eindtijd'),
-            Forms\Components\TextInput::make('breaktime_minutes')
-                ->required()
-                ->label('Pauzetijd (minuten)')
-                ->numeric(),
-            Forms\Components\TextInput::make('mileage')
-                ->required()
-                ->label('Kilometerstand')
-                ->numeric(),
-            Forms\Components\Textarea::make('description')
-                ->required()
-                ->columnSpanFull()
-                ->label('Omschrijving')
-                ->maxLength(255),
-        ]);
+            ->schema([
+                Group::make()
+                    ->relationship('user')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Naam')
+                            ->disabled(),
+                    ]),
+                Forms\Components\DatePicker::make('date')
+                    ->label('Datum')
+                    ->required(),
+                Forms\Components\TimePicker::make('start_time')
+                    ->label('Starttijd')
+                    ->format('H:i')
+                    ->seconds(false)
+                    ->required(),
+                Forms\Components\TimePicker::make('end_time')
+                    ->required()
+                    ->format('H:i')
+                    ->seconds(false)
+                    ->label('Eindtijd'),
+                Forms\Components\TextInput::make('breaktime_minutes')
+                    ->required()
+                    ->label('Pauzetijd (minuten)')
+                    ->numeric(),
+                Forms\Components\TextInput::make('mileage')
+                    ->required()
+                    ->label('Kilometerstand')
+                    ->numeric(),
+                Forms\Components\Textarea::make('description')
+                    ->required()
+                    ->columnSpanFull()
+                    ->label('Omschrijving')
+                    ->maxLength(255),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -101,14 +103,43 @@ class TimeRegistrationResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('user_id')
-                    ->label('Naam')
-                    ->relationship('user', 'name')
-            ], layout: FiltersLayout::Modal)
+                    ->label('Werknemer')
+                    ->relationship('user', 'name'),
+                SelectFilter::make('date')
+                    ->label('Maand')
+                    ->options([
+                        '01' => 'Januari',
+                        '02' => 'Februari',
+                        '03' => 'Maart',
+                        '04' => 'April',
+                        '05' => 'Mei',
+                        '06' => 'Juni',
+                        '07' => 'Juli',
+                        '08' => 'Augustus',
+                        '09' => 'September',
+                        '10' => 'Oktober',
+                        '11' => 'November',
+                        '12' => 'December',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (! $month = Arr::get($data, 'value')) {
+                            return $query;
+                        };
+
+                        return $query->whereMonth('date', $month);
+                    })
+            ], layout: FiltersLayout::AboveContent)
+            ->filtersTriggerAction(
+                fn(Action $action) => $action
+                    ->button()
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->label('Filters')
+            )
             ->actions([
                 // Tables\Actions\EditAction::make()
             ])
             ->recordUrl(
-                fn (TimeRegistration $record): string => ViewTimeRegistration::getUrl(['record' => $record->id])
+                fn(TimeRegistration $record): string => ViewTimeRegistration::getUrl(['record' => $record->id])
             )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
