@@ -101,12 +101,12 @@ class TimeRegistrationResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\EditAction::make()
-                    ->label('Bewerken'),
+                        ->label('Bewerken'),
                     Tables\Actions\DeleteAction::make()
-                    ->label('Verwijderen'),
+                        ->label('Verwijderen'),
                 ])->iconButton()
-          
-            ]);
+            ])
+            ->defaultSort('date', 'desc');
     }
 
     public static function getRelations(): array
