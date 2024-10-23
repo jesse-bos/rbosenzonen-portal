@@ -78,7 +78,7 @@ class TimeRegistrationResource extends Resource
             ->columns([
                 TextColumn::make('date')
                     ->label('Datum')
-                    ->date('d-m-Y')
+                    ->date('d-m-Y (l)')
                     ->sortable(),
                 TextColumn::make('start_time')
                     ->label('Starttijd')
