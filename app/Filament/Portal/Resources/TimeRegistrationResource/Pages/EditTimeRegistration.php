@@ -23,4 +23,9 @@ class EditTimeRegistration extends EditRecord
     {
         return 'Uren Aanpassen';
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
 }
