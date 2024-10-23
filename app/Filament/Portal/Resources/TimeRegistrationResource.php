@@ -79,16 +79,17 @@ class TimeRegistrationResource extends Resource
                 TextColumn::make('date')
                     ->label('Datum')
                     ->date('d-m-Y (l)')
+                    ->weight('bold')
                     ->sortable(),
-                TextColumn::make('start_time')
-                    ->label('Starttijd')
-                    ->time('H:i'),
-                TextColumn::make('end_time')
-                    ->label('Eindtijd')
-                    ->time('H:i'),
+                TextColumn::make('work_hours')
+                    ->label('Werkuren'),
                 TextColumn::make('breaktime_minutes')
-                    ->label('Pauzetijd (minuten)')
+                    ->label('Pauzetijd')
                     ->numeric()
+                    ->suffix(' minuten')
+                    ->visibleFrom('md'),
+                TextColumn::make('work_duration')
+                    ->label('Werkduur')
                     ->visibleFrom('md'),
                 TextColumn::make('mileage')
                     ->label('Kilometerstand')
