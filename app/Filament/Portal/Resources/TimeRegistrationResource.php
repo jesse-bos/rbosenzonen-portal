@@ -129,7 +129,7 @@ class TimeRegistrationResource extends Resource
                             return $query->whereMonth('date', $month);
                         })
                 ],
-                layout: FiltersLayout::Dropdown
+                layout: FiltersLayout::AboveContent
             )->filtersTriggerAction(
                 fn(ActionsAction $action) => $action
                     ->button()
