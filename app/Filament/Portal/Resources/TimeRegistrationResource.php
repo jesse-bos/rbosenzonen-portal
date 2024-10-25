@@ -123,7 +123,7 @@ class TimeRegistrationResource extends Resource
                                 return null;
                             }
 
-                            return 'Datum vanaf ' . Carbon::parse($data['date_from'])->toFormattedDateString();
+                            return 'Datum vanaf ' . Carbon::parse($data['date_from'])->format('d-m-Y');
                         }),
                     Filter::make('date_to')
                         ->form([
@@ -141,7 +141,7 @@ class TimeRegistrationResource extends Resource
                                 return null;
                             }
 
-                            return 'Datum tot ' . Carbon::parse($data['date_to'])->toFormattedDateString();
+                            return 'Datum tot ' . Carbon::parse($data['date_to'])->format('d-m-Y');
                         })
                 ],
                 layout: FiltersLayout::AboveContentCollapsible
