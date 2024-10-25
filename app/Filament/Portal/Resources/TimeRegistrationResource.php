@@ -4,21 +4,23 @@ namespace App\Filament\Portal\Resources;
 
 use App\Filament\Portal\Resources\TimeRegistrationResource\Pages;
 use App\Models\TimeRegistration;
-use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action as ActionsAction;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TimeRegistrationResource extends Resource
@@ -48,30 +50,30 @@ class TimeRegistrationResource extends Resource
                             ->label('Naam')
                             ->disabled(),
                     ]),
-                Forms\Components\DatePicker::make('date')
+                DatePicker::make('date')
                     ->label('Datum')
                     ->required(),
-                Forms\Components\TimePicker::make('start_time')
+                TimePicker::make('start_time')
                     ->label('Starttijd')
                     ->format('H:i')
                     ->seconds(false)
                     ->required(),
-                Forms\Components\TimePicker::make('end_time')
+                TimePicker::make('end_time')
                     ->required()
                     ->format('H:i')
                     ->seconds(false)
                     ->label('Eindtijd'),
-                Forms\Components\TextInput::make('breaktime_minutes')
+                TextInput::make('breaktime_minutes')
                     ->required()
                     ->label('Pauzetijd')
                     ->suffix('minuten')
                     ->numeric(),
-                Forms\Components\TextInput::make('mileage')
+                TextInput::make('mileage')
                     ->required()
                     ->label('Kilometerstand')
                     ->suffix('kilometer')
                     ->numeric(),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->required()
                     ->columnSpanFull()
                     ->label('Omschrijving')
@@ -105,31 +107,44 @@ class TimeRegistrationResource extends Resource
             ])
             ->filters(
                 [
-                    SelectFilter::make('date')
-                        ->label('Maand')
-                        ->options([
-                            '01' => 'Januari',
-                            '02' => 'Februari',
-                            '03' => 'Maart',
-                            '04' => 'April',
-                            '05' => 'Mei',
-                            '06' => 'Juni',
-                            '07' => 'Juli',
-                            '08' => 'Augustus',
-                            '09' => 'September',
-                            '10' => 'Oktober',
-                            '11' => 'November',
-                            '12' => 'December',
+                    Filter::make('date_from')
+                        ->form([
+                            DatePicker::make('date_from')
+                                ->label('Datum vanaf'),
                         ])
-                        ->query(function ($query, array $data) {
-                            if (! $month = Arr::get($data, 'value')) {
-                                return $query;
-                            };
+                        ->query(function (Builder $query, array $data): Builder {
+                            return $query
+                                ->when(
+                                    $data['date_from'],
+                                    fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                                );
+                        })->indicateUsing(function (array $data): ?string {
+                            if (! $data['date_from']) {
+                                return null;
+                            }
 
-                            return $query->whereMonth('date', $month);
+                            return 'Datum vanaf ' . Carbon::parse($data['date_from'])->toFormattedDateString();
+                        }),
+                    Filter::make('date_to')
+                        ->form([
+                            DatePicker::make('date_to')
+                                ->label('Datum tot'),
+                        ])
+                        ->query(function (Builder $query, array $data): Builder {
+                            return $query
+                                ->when(
+                                    $data['date_to'],
+                                    fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                                );
+                        })->indicateUsing(function (array $data): ?string {
+                            if (! $data['date_to']) {
+                                return null;
+                            }
+
+                            return 'Datum tot ' . Carbon::parse($data['date_to'])->toFormattedDateString();
                         })
                 ],
-                layout: FiltersLayout::AboveContent
+                layout: FiltersLayout::AboveContentCollapsible
             )->filtersTriggerAction(
                 fn(ActionsAction $action) => $action
                     ->button()
@@ -138,9 +153,9 @@ class TimeRegistrationResource extends Resource
             )
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->label('Bewerken'),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->label('Verwijderen'),
                 ])->iconButton()
             ])

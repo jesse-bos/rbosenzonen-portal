@@ -16,11 +16,13 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 
 class TimeRegistrationResource extends Resource
 {
@@ -102,32 +104,46 @@ class TimeRegistrationResource extends Resource
                     ->visibleFrom('md'),
             ])
             ->filters([
+                Filter::make('date_from')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_from')
+                            ->label('Datum vanaf'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            );
+                    })->indicateUsing(function (array $data): ?string {
+                        if (! $data['date_from']) {
+                            return null;
+                        }
+
+                        return 'Datum vanaf ' . Carbon::parse($data['date_from'])->toFormattedDateString();
+                    }),
+                Filter::make('date_to')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_to')
+                            ->label('Datum tot'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_to'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    })->indicateUsing(function (array $data): ?string {
+                        if (! $data['date_to']) {
+                            return null;
+                        }
+
+                        return 'Datum tot ' . Carbon::parse($data['date_to'])->toFormattedDateString();
+                    }),
                 SelectFilter::make('user_id')
                     ->label('Werknemer')
-                    ->relationship('user', 'name'),
-                SelectFilter::make('date')
-                    ->label('Maand')
-                    ->options([
-                        '01' => 'Januari',
-                        '02' => 'Februari',
-                        '03' => 'Maart',
-                        '04' => 'April',
-                        '05' => 'Mei',
-                        '06' => 'Juni',
-                        '07' => 'Juli',
-                        '08' => 'Augustus',
-                        '09' => 'September',
-                        '10' => 'Oktober',
-                        '11' => 'November',
-                        '12' => 'December',
-                    ])
-                    ->query(function ($query, array $data) {
-                        if (! $month = Arr::get($data, 'value')) {
-                            return $query;
-                        };
-
-                        return $query->whereMonth('date', $month);
-                    })
+                    ->relationship('user', 'name')
+                    ->placeholder('Iedereen'),
             ], layout: FiltersLayout::AboveContent)
             ->filtersTriggerAction(
                 fn(Action $action) => $action
