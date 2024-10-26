@@ -86,17 +86,15 @@ class TimeRegistrationResource extends Resource
                     ->label('Datum')
                     ->date('d-m-Y')
                     ->sortable(),
-                TextColumn::make('start_time')
-                    ->label('Starttijd')
-                    ->time('H:i')
-                    ->visibleFrom('md'),
-                TextColumn::make('end_time')
-                    ->label('Eindtijd')
-                    ->time('H:i')
+                    TextColumn::make('work_hours')
+                    ->label('Werkuren')
                     ->visibleFrom('md'),
                 TextColumn::make('breaktime_minutes')
                     ->label('Pauzetijd (minuten)')
                     ->numeric()
+                    ->visibleFrom('md'),
+                    TextColumn::make('work_duration')
+                    ->label('Werkduur')
                     ->visibleFrom('md'),
                 TextColumn::make('mileage')
                     ->label('Kilometerstand')
@@ -144,7 +142,7 @@ class TimeRegistrationResource extends Resource
                     ->label('Werknemer')
                     ->relationship('user', 'name')
                     ->placeholder('Iedereen'),
-            ], layout: FiltersLayout::AboveContent)
+            ], layout: FiltersLayout::AboveContentCollapsible)
             ->filtersTriggerAction(
                 fn(Action $action) => $action
                     ->button()
