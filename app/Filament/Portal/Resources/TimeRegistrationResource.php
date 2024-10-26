@@ -159,7 +159,8 @@ class TimeRegistrationResource extends Resource
                         ->label('Verwijderen'),
                 ])->iconButton()
             ])
-            ->defaultSort('date', 'desc');
+            ->defaultSort('date', 'desc')
+            ->defaultPaginationPageOption(5);
     }
 
     public static function getRelations(): array
