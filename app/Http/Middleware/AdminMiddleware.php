@@ -16,6 +16,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! Auth::check()) {
+            return redirect()->route('filament.portal.auth.login');
+        }
+
         if (! Auth::user()?->is_admin) {
             abort(403);
         }
