@@ -155,8 +155,8 @@ class TimeRegistrationResource extends Resource
                 ActionGroup::make([
                     EditAction::make()
                         ->label('Bewerken'),
-                    DeleteAction::make()
-                        ->label('Verwijderen'),
+                // DeleteAction::make()
+                    //     ->label('Verwijderen'),
                 ])->iconButton()
             ])
             ->defaultSort('date', 'desc')

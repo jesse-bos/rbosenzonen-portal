@@ -2,18 +2,21 @@
 
 namespace App\Filament\Portal\Resources\TimeRegistrationResource\Widgets;
 
+use App\Models\User;
 use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
-class TimeRegistrationStatus extends Widget
+class TimeRegistrationForTodayWidget extends Widget
 {
     protected static string $view = 'filament.portal.resources.time-registration-resource.widgets.time-registration-status';
 
     protected int | string | array $columnSpan = 2;
 
-    public function hasRegisteredTimeToday()
+    public static function canView(): bool
     {
-        return auth()->user()->timeRegistrations()->where('date', now()->format('Y-m-d'))->exists();
+        /** @var User $user */
+        $user = Auth::user();
+        return ! $user->hasTimeRegistrationForToday();
     }
-
 }

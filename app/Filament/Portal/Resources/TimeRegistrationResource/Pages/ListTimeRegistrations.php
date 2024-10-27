@@ -17,7 +17,7 @@ class ListTimeRegistrations extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Uren Boeken')
+                ->label('Uren Registreren')
                 ->icon('heroicon-o-plus'),
         ];
     }
