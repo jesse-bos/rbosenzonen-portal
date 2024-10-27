@@ -8,7 +8,7 @@
                 href="{{ route('filament.portal.resources.time-registrations.create') }}"
                 tag="a"
                 
-                icon="heroicon-o-clock">
+                icon="heroicon-o-plus">
                 Uren Registreren
             </x-filament::button>
         </div>

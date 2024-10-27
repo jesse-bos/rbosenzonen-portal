@@ -29,7 +29,7 @@ class TimeRegistrationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
-    protected static ?string $navigationLabel = 'Uren';
+    protected static ?string $navigationLabel = 'Urenregistraties';
 
     protected static ?string $breadcrumb = 'Uren';
 
