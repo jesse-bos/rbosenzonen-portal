@@ -4,12 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Carbon\CarbonInterval;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -69,5 +71,30 @@ class User extends Authenticatable implements FilamentUser
     public function hasTimeRegistrationForToday(): bool
     {
         return $this->timeRegistrations()->where('date', now()->format('Y-m-d'))->exists();
+    }
+
+    public function getHoursThisWeek(): float
+    {
+        $totalWorkMinutes = $this->timeRegistrations()
+            ->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])
+            ->get()
+            ->sum(function ($timeRegistration) {
+                $startTime = Carbon::parse($timeRegistration->start_time);
+                $endTime = Carbon::parse($timeRegistration->end_time);
+    
+                if ($timeRegistration->start_time > $timeRegistration->end_time) {
+                    return 0;
+                }
+    
+                $totalMinutes = $startTime->diffInMinutes($endTime);
+                $workMinutes = $totalMinutes - $timeRegistration->breaktime_minutes;
+    
+                return $workMinutes;
+            });
+    
+        // Convert total minutes to hours as a float
+        $totalWorkHours = $totalWorkMinutes / 60;
+    
+        return round($totalWorkHours, 2); // Round to 2 decimal places for precision
     }
 }
